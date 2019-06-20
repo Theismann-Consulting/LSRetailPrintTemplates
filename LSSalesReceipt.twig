@@ -130,7 +130,7 @@ p.details {
 }
 
 h2 {
-	border-bottom: 0.25px solid black;
+	border-bottom: 0.25px solid rgba(130,124,120,1);
 	text-transform: uppercase;
 	font-size: 10pt;
 	margin: .5em 0 0;
@@ -172,15 +172,25 @@ table tbody th {
 }
 
 table td.amount, table th.amount { text-align: right; }
-table td.linetotal { text-align: right; border-left: 0.25px solid black; border-bottom: 0.25px solid black;}
+table th.linetotal {
+	text-align: right;
+	border-right: 0.25px solid rgba(130,124,120,1);
+}
+table td.linetotal { text-align: right; border-left: 0.25px solid rgba(130,124,120,1); border-bottom: 0.25px solid rgba(130,124,120,1);}
 table td.quantity, table th.quantity { text-align: center;
-	border-bottom: 0.25px solid black; }
+	border-bottom: 0.25px solid rgba(130,124,120,1); }
 table td.sellprice, table th.sellprice { text-align: center;
-		border-bottom: 0.25px solid black;
+		border-bottom: 0.25px solid rgba(130,124,120,1);
 		white-space: nowrap;}
 
 th.description {
 	width: 50%;
+}
+td.description {
+	width: 50%;
+}
+table td.description {
+	border-bottom: 0.25px solid rgba(130,124,120,1);
 }
 
 td.amount { white-space: nowrap; }
@@ -191,22 +201,32 @@ table.spacer { margin-top: 1em; }
 table tr.total td { font-weight: bold; }
 
 table td.amount { padding-left: 10px; }
-table td.custom_field, table th.custom_field{
+table th.custom_field{
 	padding-right: 10px;
 	text-align: center;
-	border-bottom: 0.25px solid black;
+	border-bottom: 0.25px solid rgba(130,124,120,1);
+	border-left: 0.25px solid rgba(130,124,120,1);
+}
+table td.custom_field{
+	padding-right: 10px;
+	text-align: center;
+	border-bottom: 0.25px solid rgba(130,124,120,1);
+}
+table td.notes, table th.notes{
+	padding-right: 10px;
+	text-align: center;
+	border-bottom: 0.25px solid rgba(130,124,120,1);
 }
 
-table.sale { border-bottom: 0.25px solid black; }
+table.sale { border-bottom: 0.25px solid rgba(130,124,120,1); }
 
 table.sale th {
-	border-bottom: 0.25px solid black;
+	border-bottom: 0.25px solid rgba(130,124,120,1);
 	font-weight: bold;
 }
 
 table div.line_description {
 	text-align: left;
-	font-weight: bold;
 }
 
 table div.line_note {
@@ -515,14 +535,6 @@ table.payments td.label {
 			padding-top: 30px;
 		}
 
-		table.sale tbody tr:first-child th,
-		table.sale tbody tr:first-child td {
-			padding-top: 10px;
-		}
-		table.sale tbody tr:last-child th,
-		table.sale tbody tr:last-child td {
-			padding-bottom: 10px;
-		}
 		table.sale tbody th,
 		table.sale tbody td {
 			padding-bottom: 5px;
@@ -950,7 +962,7 @@ table.payments td.label {
 		{% if options.show_custom_sku and Line.Item.customSku %}
 			<td class="custom_field">{{ Line.Item.customSku }}</td>
 		{% endif %}
-		<th data-automation="lineItemDescription" class="description">
+		<td data-automation="lineItemDescription" class="description">
 			{{ _self.lineDescription(Line,options) }}
 		</th>
 
@@ -1026,18 +1038,14 @@ table.payments td.label {
 				{% endif %}
 				<th class="description">Description</th>
 
-				{% if options.show_msrp and not parameters.gift_receipt %}
-					<th class="custom_field">MSRP</th>
-				{% endif %}
-
-				<th class="quantity">Notes</th>
+				<th class="notes">Notes</th>
 
 				<th class="quantity">QTY</th>
 
 				<th class="sellprice">Sell Price</th>
 
 				{% if not parameters.gift_receipt %}
-					<th class="amount">Total</th>
+					<th class="linetotal">Total</th>
 				{% endif %}
 			</tr>
 			<tbody>
@@ -1464,18 +1472,14 @@ table.payments td.label {
 				{% endif %}
 				<th class="description">Description</th>
 
-				{% if options.show_msrp and not parameters.gift_receipt %}
-					<th class="custom_field">MSRP</th>
-				{% endif %}
-
-				<th class="quantity">Notes</th>
+				<th class="notes">Notes</th>
 
 				<th class="quantity">QTY</th>
 
 				<th class="sellprice">Sell Price</th>
 
 				{% if not parameters.gift_receipt %}
-					<th class="amount">Total</th>
+					<th class="linetotal">Total</th>
 				{% endif %}
 			</tr>
 			<tbody>
@@ -1522,18 +1526,14 @@ table.payments td.label {
 				{% endif %}
 				<th class="description">Description</th>
 
-				{% if options.show_msrp and not parameters.gift_receipt %}
-					<th class="custom_field">MSRP</th>
-				{% endif %}
-
-				<th class="quantity">Notes</th>
+				<th class="notes">Notes</th>
 
 				<th class="quantity">QTY</th>
 
 				<th class="sellprice">Sell Price</th>
 
 				{% if not parameters.gift_receipt %}
-					<th class="amount">Total</th>
+					<th class="linetotal">Total</th>
 				{% endif %}
 			</tr>
 			<tbody>
