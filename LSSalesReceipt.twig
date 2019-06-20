@@ -130,7 +130,7 @@ p.details {
 }
 
 h2 {
-	border-bottom: 0.5px solid black;
+	border-bottom: 0.25px solid black;
 	text-transform: uppercase;
 	font-size: 10pt;
 	margin: .5em 0 0;
@@ -172,11 +172,11 @@ table tbody th {
 }
 
 table td.amount, table th.amount { text-align: right; }
-table td.linetotal { text-align: right; border-left: 0.5px solid black; border-bottom: 0.5px solid black;}
+table td.linetotal { text-align: right; border-left: 0.25px solid black; border-bottom: 0.25px solid black;}
 table td.quantity, table th.quantity { text-align: center;
-	border-bottom: 0.5px solid black; }
+	border-bottom: 0.25px solid black; }
 table td.sellprice, table th.sellprice { text-align: center;
-		border-bottom: 0.5px solid black;
+		border-bottom: 0.25px solid black;
 		white-space: nowrap;}
 
 th.description {
@@ -194,13 +194,13 @@ table td.amount { padding-left: 10px; }
 table td.custom_field, table th.custom_field{
 	padding-right: 10px;
 	text-align: center;
-	border-bottom: 0.5px solid black;
+	border-bottom: 0.25px solid black;
 }
 
-table.sale { border-bottom: 0.5px solid black; }
+table.sale { border-bottom: 0.25px solid black; }
 
 table.sale th {
-	border-bottom: 0.5px solid black;
+	border-bottom: 0.25px solid black;
 	font-weight: bold;
 }
 
@@ -1150,7 +1150,7 @@ table.payments td.label {
 		{% if Sale.SaleLines %}
 		 &nbsp;
 		{% else %}
-			{% if Sale.Customer and not store_copy %}
+			{% if Sale.Customer %}
 			{% if options.show_customer_layaways %}
 				{{ _self.layaways(Sale.Customer,Sale.isTaxInclusive,parameters.gift_receipt,options)}}
 			{% endif %}
