@@ -1,6 +1,7 @@
 # LSRetailPrintTemplates
 Custom Print Templates for Lightspeed Retail POS
 
+<Strong>LS Sales Receipt</strong>
 This update adds the following functionality and changes:
 <ul>
 <li>Receipt is formatted for letter size printing in portrait orientation</li>
