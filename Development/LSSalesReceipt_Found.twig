@@ -716,7 +716,7 @@ table.payments td.label {
 			{% autoescape true %}{{ Line.Item.description|nl2br }}{% if Line.tax == 'false' or (Line.calcTax1 == 0 and Line.calcTax2 == 0) %}*{% endif %}{% endautoescape %}
 			<script>
 			(async() => {
-				const request = await fetch('https://us.lightspeedapp.com/API/Account/{{AccountId}}/Item/{{ Line.Item.itemID }}/Image.json', {credentials:"same-origin"});
+				const request = await fetch('https://us.lightspeedapp.com/API/Account/195684/Item/{{ Line.Item.itemID }}/Image.json', {credentials:"same-origin"});
 				const response = await request.json();
 				document.getElementById("{{ Line.Item.itemID }}").src = response.Image.baseImageURL + response.Image.publicID + ".png";
 			})()
