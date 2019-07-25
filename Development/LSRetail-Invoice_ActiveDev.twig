@@ -86,12 +86,15 @@
 {% extends parameters.print ? "printbase" : "base" %}
 {% block extrastyles %}
 
-@page { margin: 0px; }
+@page {
+	size: auto;
+	margin: 30px;
+}
 
 body {
-	font: normal 10pt Segoe UI,Roboto,Helvetica Neue,Arial,sans-serif;
+	font: normal 7pt Segoe UI,Roboto,Helvetica Neue,Arial,sans-serif;
 	width: {{parameters.page_width|pageWidthToCss}};
-	margin:30px;
+	margin:0px;
 	padding: 1px; <!-- You need this to make the printer behave -->
 
 	{% if chrome_right_margin_fix == true %}
@@ -108,7 +111,7 @@ body {
 }
 
 .receipt {
-	font: normal 10pt Segoe UI,Roboto,Helvetica Neue,Arial,sans-serif;
+	font: normal 7pt Segoe UI,Roboto,Helvetica Neue,Arial,sans-serif;
 }
 
 h1 {
@@ -130,7 +133,7 @@ p.details {
 }
 
 h2 {
-	border-bottom: 0.5px solid black;
+	border-bottom: 0.1px solid rgba(130,124,120,1);
 	text-transform: uppercase;
 	font-size: 10pt;
 	margin: .5em 0 0;
@@ -172,15 +175,30 @@ table tbody th {
 }
 
 table td.amount, table th.amount { text-align: right; }
-table td.linetotal { text-align: right; border-left: 0.5px solid black; border-bottom: 0.5px solid black;}
+table th.linetotal {
+	text-align: center;
+	border-right: 0.1px solid rgba(130,124,120,1);
+}
+table td.linetotal { text-align: center;
+ 	border-left: 0.1px solid rgba(130,124,120,1);
+	border-bottom: 0.1px solid rgba(130,124,120,1);
+}
 table td.quantity, table th.quantity { text-align: center;
-	border-bottom: 0.5px solid black; }
+	border-bottom: 0.1px solid rgba(130,124,120,1);
+}
 table td.sellprice, table th.sellprice { text-align: center;
-		border-bottom: 0.5px solid black;
-		white-space: nowrap;}
+		border-bottom: 0.1px solid rgba(130,124,120,1);
+		white-space: nowrap;
+}
 
 th.description {
 	width: 50%;
+}
+td.description {
+	width: 50%;
+}
+table td.description {
+	border-bottom: 0.1px solid rgba(130,124,120,1);
 }
 
 td.amount { white-space: nowrap; }
@@ -191,22 +209,35 @@ table.spacer { margin-top: 1em; }
 table tr.total td { font-weight: bold; }
 
 table td.amount { padding-left: 10px; }
-table td.custom_field, table th.custom_field{
+table th.custom_field{
 	padding-right: 10px;
 	text-align: center;
-	border-bottom: 0.5px solid black;
+	border-bottom: 0.1px solid rgba(130,124,120,1);
+	border-left: 0.1px solid rgba(130,124,120,1);
+}
+table td.custom_field{
+	padding-right: 10px;
+	text-align: center;
+	border-bottom: 0.1px solid rgba(130,124,120,1);
+}
+table td.notes, table th.notes{
+	padding-right: 10px;
+	text-align: center;
+	border-bottom: 0.1px solid rgba(130,124,120,1);
 }
 
-table.sale { border-bottom: 0.5px solid black; }
+table.sale { border-bottom: 0.1px solid rgba(130,124,120,1); }
 
 table.sale th {
-	border-bottom: 0.5px solid black;
 	font-weight: bold;
+}
+
+table.sale tr.header {
+	border: 0.1px solid rgba(130,124,120,1);
 }
 
 table div.line_description {
 	text-align: left;
-	font-weight: bold;
 }
 
 table div.line_note {
@@ -515,14 +546,6 @@ table.payments td.label {
 			padding-top: 30px;
 		}
 
-		table.sale tbody tr:first-child th,
-		table.sale tbody tr:first-child td {
-			padding-top: 10px;
-		}
-		table.sale tbody tr:last-child th,
-		table.sale tbody tr:last-child td {
-			padding-bottom: 10px;
-		}
 		table.sale tbody th,
 		table.sale tbody td {
 			padding-bottom: 5px;
@@ -553,22 +576,18 @@ table.payments td.label {
 		span.italic {
 			font-style: italic;
 		}
+		div.discount {
+			font-style: italic:
+		}
+		@import url('https://fonts.googleapis.com/css?family=Roboto&display=swap');
 
 	}
 
 {% endif %}
 
-{% endblock extrastyles %}
 
-<script>
-(async() => {
-	const request = await fetch('https://us.lightspeedapp.com/API/Account/195684/Item/{{ Line.Item.itemID }}/Image.json', {credentials:"same-origin"});
-	const response = await request.json();
-	images = JSON.stringify(response);
-	var itemImage = document.getElementById("prodImage").src = response.Image.baseImageURL + response.Image.publicID + ".png";
-	
-})()
-</script>
+
+{% endblock extrastyles %}
 
 {% block content %}
 	{% set page_loaded = false %}
@@ -688,15 +707,31 @@ table.payments td.label {
 
 		{{ _self.ship_to(Sale,options) }}
 	</div>
+</div>
 {% endmacro %}
 
 {% macro lineDescription(Line,options) %}
 	{% if Line.Item %}
 		<div class='line_description'>
 			{% autoescape true %}{{ Line.Item.description|nl2br }}{% if Line.tax == 'false' or (Line.calcTax1 == 0 and Line.calcTax2 == 0) %}*{% endif %}{% endautoescape %}
-			<p><img id="prodImage" width="225px"></p>
+			<script>
+			(async() => {
+				const request = await fetch('https://us.lightspeedapp.com/API/Account/{{AccountId}}/Item/{{ Line.Item.itemID }}/Image.json', {credentials:"same-origin"});
+				const response = await request.json();
+				document.getElementById("{{ Line.Item.itemID }}").src = response.Image.baseImageURL + response.Image.publicID + ".png";
+			})()
+			</script>
+			<p><img id="{{ Line.Item.itemID }}" width="125px"></p>
 		</div>
-
+	{% endif %}
+	{% if options.per_line_discount == true and not parameters.gift_receipt %}
+		<div class="discount">
+		{% if Line.calcLineDiscount > 0 %}
+			<i>Discount: '{{ Line.Discount.name }}'</i>
+		{% elseif Line.calcLineDiscount < 0 %}
+			<i>Discount: '{{ Line.Discount.name }}'</i>
+		{% endif %}
+		</div>
 	{% endif %}
 	{% if Line.Note %}
 		<div class='line_note'>
@@ -954,24 +989,13 @@ table.payments td.label {
 		{% if options.show_custom_sku and Line.Item.customSku %}
 			<td class="custom_field">{{ Line.Item.customSku }}</td>
 		{% endif %}
-		<th data-automation="lineItemDescription" class="description">
+		<td data-automation="lineItemDescription" class="description">
 			{{ _self.lineDescription(Line,options) }}
 		</th>
 
 		{% if options.show_manufacturer_sku and Line.Item.manufacturerSku %}
 			<td class="custom_field">{{ Line.Item.manufacturerSku }}</td>
 		{% endif %}
-
-		{% if options.per_line_discount == true and not parameters.gift_receipt %}
-			<td class="custom_field">
-			{% if Line.calcLineDiscount > 0 %}
-				<i>Discount: '{{ Line.Discount.name }}'</i>
-			{% elseif Line.calcLineDiscount < 0 %}
-				<i>Discount: '{{ Line.Discount.name }}'</i>
-			{% endif %}
-			</td>
-		{% endif %}
-
 
 		{% if options.show_msrp == true and not parameters.gift_receipt %}
 			{% set msrp_printed = false %}
@@ -990,6 +1014,7 @@ table.payments td.label {
 			{{Line.unitQuantity}}
 		</td>
 
+		{% if not parameters.gift_receipt %}
 		<td data-automation="lineItemPrice" class="sellprice">
 			{% if options.per_line_subtotal and options.discounted_line_items and Line.calcLineDiscount != 0 and not parameters.gift_receipt %}
 				<span class="strike">{{Line.displayableUnitPrice|number_format(2, ".")}}<br></span>
@@ -1002,7 +1027,9 @@ table.payments td.label {
 				{% endif %}
 			{% endif %}
 		</td>
+		{% endif %}
 
+		{% if not parameters.gift_receipt %}
 		<td data-automation="lineItemPrice" class="linetotal">
 			{% if not parameters.gift_receipt %}
 				{% if options.discounted_line_items and not options.per_line_subtotal and Line.calcLineDiscount != 0 %}
@@ -1015,13 +1042,14 @@ table.payments td.label {
 				{{ Line.displayableSubtotal|number_format(2, ".") }}
 			{% endif %}
 		</td>
+		{% endif %}
 	</tr>
 {% endmacro %}
 
 {% macro receipt(Sale,parameters,store_copy,options) %}
 	{% if Sale.SaleLines %}
 		<table class="sale lines">
-			<tr>
+			<tr class="header">
 				{% if options.show_custom_sku and options.show_manufacturer_sku %}
 					<th class="custom_field">Custom SKU</th>
 					<th class="custom_field">Man. SKU </th>
@@ -1030,18 +1058,11 @@ table.payments td.label {
 				{% endif %}
 				<th class="description">Description</th>
 
-				{% if options.show_msrp and not parameters.gift_receipt %}
-					<th class="custom_field">MSRP</th>
-				{% endif %}
-
-				<th class="quantity">Notes</th>
-
 				<th class="quantity">QTY</th>
 
-				<th class="sellprice">Sell Price</th>
-
 				{% if not parameters.gift_receipt %}
-					<th class="amount">Total</th>
+					<th class="sellprice">Sell Price</th>
+					<th class="linetotal">Total</th>
 				{% endif %}
 			</tr>
 			<tbody>
@@ -1154,7 +1175,7 @@ table.payments td.label {
 		{% if Sale.SaleLines %}
 		 &nbsp;
 		{% else %}
-			{% if Sale.Customer and not store_copy %}
+			{% if Sale.Customer %}
 			{% if options.show_customer_layaways %}
 				{{ _self.layaways(Sale.Customer,Sale.isTaxInclusive,parameters.gift_receipt,options)}}
 			{% endif %}
@@ -1169,7 +1190,7 @@ table.payments td.label {
 
 		{% if options.show_customer_credit_account and Sale.Customer and not parameters.gift_receipt and not store_copy %}
 			{% if Sale.Customer.CreditAccount and Sale.Customer.CreditAccount.MetaData.creditBalanceOwed > 0 or Sale.Customer.CreditAccount.MetaData.extraDeposit > 0 %}
-				<h2 class="footerSectionTitle">Store Account</h2>
+				<h2 class="footerSectionTitle">Accounts Receivable</h2>
 				<table class="totals">
 					{% if Sale.Customer.CreditAccount.MetaData.creditBalanceOwed > 0 %}
 						<tr>
@@ -1194,6 +1215,9 @@ table.payments td.label {
 			{% endif %}
 		{% endif %}
 	{% endif %}
+	<script>
+	alert("Images are Loading...");
+	</script>
 {% endmacro %}
 
 {% macro cc_payment_info(Sale,Payment) %}
@@ -1459,7 +1483,7 @@ table.payments td.label {
 		<h2 class="footerSectionTitle">{{ mostranslate('approval', 'plural', true, 'capitalize', true) }}</h2>
 		{% endif %}
 		<table class="sale lines">
-			<tr>
+			<tr class="header">
 				{% if options.show_custom_sku and options.show_manufacturer_sku %}
 					<th class="custom_field">Custom SKU</th>
 					<th class="custom_field">Man. SKU </th>
@@ -1468,18 +1492,12 @@ table.payments td.label {
 				{% endif %}
 				<th class="description">Description</th>
 
-				{% if options.show_msrp and not parameters.gift_receipt %}
-					<th class="custom_field">MSRP</th>
-				{% endif %}
-
-				<th class="quantity">Notes</th>
-
 				<th class="quantity">QTY</th>
 
 				<th class="sellprice">Sell Price</th>
 
 				{% if not parameters.gift_receipt %}
-					<th class="amount">Total</th>
+					<th class="linetotal">Total</th>
 				{% endif %}
 			</tr>
 			<tbody>
@@ -1517,7 +1535,7 @@ table.payments td.label {
 		<h2 class="footerSectionTitle" id="lineItemSectionSO">Special Orders</h2>
 		{% endif %}
 		<table id="containerSOLineItems" class="sale lines">
-			<tr>
+			<tr class="header">
 				{% if options.show_custom_sku and options.show_manufacturer_sku %}
 					<th class="custom_field">Custom SKU</th>
 					<th class="custom_field">Man. SKU </th>
@@ -1526,18 +1544,12 @@ table.payments td.label {
 				{% endif %}
 				<th class="description">Description</th>
 
-				{% if options.show_msrp and not parameters.gift_receipt %}
-					<th class="custom_field">MSRP</th>
-				{% endif %}
-
-				<th class="quantity">Notes</th>
-
 				<th class="quantity">QTY</th>
 
 				<th class="sellprice">Sell Price</th>
 
 				{% if not parameters.gift_receipt %}
-					<th class="amount">Total</th>
+					<th class="linetotal">Total</th>
 				{% endif %}
 			</tr>
 			<tbody>
