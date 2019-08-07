@@ -3,6 +3,8 @@
 	Toggle any of the options in this section between 'false' and 'true' in order to enable/disable them in the template
 #}
 
+{% set AccountID = %}
+
 {# Layout Adjustments #}
 {% set print_layout = true %} {# Improves receipt layout for large display/paper size (A4/Letter/Email) #}
 {% set chrome_right_margin_fix = false %}           {# Fixes a potential issue where the right side of receipts are cut off in Chrome #}
@@ -716,7 +718,7 @@ table.payments td.label {
 			{% autoescape true %}{{ Line.Item.description|nl2br }}{% if Line.tax == 'false' or (Line.calcTax1 == 0 and Line.calcTax2 == 0) %}*{% endif %}{% endautoescape %}
 			<script>
 			(async() => {
-				const request = await fetch('https://us.lightspeedapp.com/API/Account/{{AccountId}}/Item/{{ Line.Item.itemID }}/Image.json', {credentials:"same-origin"});
+				const request = await fetch('https://us.lightspeedapp.com/API/Account/{{ Options.AccountID }}/Item/{{ Line.Item.itemID }}/Image.json', {credentials:"same-origin"});
 				const response = await request.json();
 				document.getElementById("{{ Line.Item.itemID }}").src = response.Image.baseImageURL + response.Image.publicID + ".png";
 			})()
@@ -1190,7 +1192,7 @@ table.payments td.label {
 
 		{% if options.show_customer_credit_account and Sale.Customer and not parameters.gift_receipt and not store_copy %}
 			{% if Sale.Customer.CreditAccount and Sale.Customer.CreditAccount.MetaData.creditBalanceOwed > 0 or Sale.Customer.CreditAccount.MetaData.extraDeposit > 0 %}
-				<h2 class="footerSectionTitle">Accounts Receivable</h2>
+				<h2 class="footerSectionTitle">Payments Outstanding from Previous Invoices</h2>
 				<table class="totals">
 					{% if Sale.Customer.CreditAccount.MetaData.creditBalanceOwed > 0 %}
 						<tr>
