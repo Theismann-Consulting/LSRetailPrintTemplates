@@ -68,7 +68,7 @@ Set any of the options in this section from 'false' to 'true' in order to enable
 {# Small Label (1.25x1.00) settings #}
 
 {% set small_description_font_size = '0pt' %}       {# Default is 9pt #}
-{% set small_price_font_size = '0pt' %}             {# Default is 7pt #}
+{% set small_price_font_size = '6pt' %}             {# Default is 7pt #}
 {% set small_SKU_font_size = '9pt' %}       {# Default is 9pt #}
 
 {# Use the following if adjustments to the label position are needed. Positive and negative numbers work #}
@@ -207,6 +207,7 @@ Set any of the options in this section from 'false' to 'true' in order to enable
 
     .label.size125x100 .SKU {
         font-size: {{ small_SKU_font_size }};
+	margin-bottom: 0;
     }
 
     .label.size125x100 .price {
