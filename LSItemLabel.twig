@@ -33,15 +33,15 @@ Set any of the options in this section from 'false' to 'true' in order to enable
 
 {# Use the following if adjustments to the label position are needed. Positive and negative numbers work #}
 
-{% set normal_top_margin = '0px' %}
-{% set normal_right_margin = '0px' %}
-{% set normal_bottom_margin = '0px' %}
-{% set normal_left_margin = '0px' %}
+{% set normal_top_margin = '10px' %}
+{% set normal_right_margin = '10px' %}
+{% set normal_bottom_margin = '10px' %}
+{% set normal_left_margin = '10px' %}
 
 {# For Vertical:   Negative numbers move up, positive move down
    For Horizontal: Negative numbers move right, positive move left #}
 
-{% set normal_barcode_vertical = '0px' %}
+{% set normal_barcode_vertical = '-20px' %}
 {% set normal_barcode_horizontal = '0px' %}
 
 
@@ -73,10 +73,10 @@ Set any of the options in this section from 'false' to 'true' in order to enable
 
 {# Use the following if adjustments to the label position are needed. Positive and negative numbers work #}
 
-{% set small_top_margin = '0px' %}
-{% set small_right_margin = '0px' %}
-{% set small_bottom_margin = '0px' %}
-{% set small_left_margin = '0px' %}
+{% set small_top_margin = '10px' %}
+{% set small_right_margin = '10px' %}
+{% set small_bottom_margin = '10px' %}
+{% set small_left_margin = '10px' %}
 
 {# For Vertical:   Negative numbers move up, positive move down
    For Horizontal: Negative numbers move right, positive move left #}
@@ -127,8 +127,8 @@ Set any of the options in this section from 'false' to 'true' in order to enable
     {# Normal Label (2.5x4) CSS settings #}
 
     .label {
-      width: 2.5in;
-      height: 4in;
+      width: 4in;
+      height: 2.5in;
       margin: 0;
       position: relative;
       overflow: hidden;
@@ -154,11 +154,19 @@ Set any of the options in this section from 'false' to 'true' in order to enable
     }
 
     .label.size225x125 .SKU {
+        margin: 10px 0px;
+        float: left;
         font-size: {{ normal_description_font_size }};
     }
 
     .label.size225x125 .price {
+        float: right;
         font-size: {{ normal_price_font_size }};
+    }
+
+    .label.size225x125 .dimensions {
+        margin: 5px 0px;
+        font-size: 12pt;
     }
 
     .label.size225x125 .barcode {
@@ -206,12 +214,14 @@ Set any of the options in this section from 'false' to 'true' in order to enable
     }
 
     .label.size125x100 .SKU {
+        font-weight: bold;
         text-align: center;
         margin-bottom: 0;
         font-size: {{ small_SKU_font_size }};
     }
 
     .label.size125x100 .price {
+        font-weight: bold;
         width: 100%;
         margin: auto;
         font-size: {{ small_price_font_size }};
