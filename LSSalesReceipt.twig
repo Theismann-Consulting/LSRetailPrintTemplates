@@ -718,7 +718,11 @@ table.payments td.label {
 			(async() => {
 				const request = await fetch('https://us.lightspeedapp.com/API/Account/{{ AccountID }}/Item/{{ Line.Item.itemID }}/Image.json', {credentials:"same-origin"});
 				const response = await request.json();
-				document.getElementById("{{ Line.Item.itemID }}").src = response.Image.baseImageURL + response.Image.publicID + ".png";
+				if(Array.isArray(response.Image)){
+					document.getElementById("{{ Line.Item.itemID }}").src = response.Image[0].baseImageURL + response.Image[0].publicID + ".png";
+					} else {
+					document.getElementById("{{ Line.Item.itemID }}").src = response.Image.baseImageURL + response.Image.publicID + ".png";
+				}
 			})()
 			</script>
 			<p><img id="{{ Line.Item.itemID }}" width="125px"></p>
