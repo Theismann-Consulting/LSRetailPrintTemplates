@@ -313,7 +313,17 @@ dl dd {
 
 dl dd p { margin: 0; }
 
-.strike { text-decoration: line-through; }
+.strike {
+    position: relative;
+}
+.strike::before {
+    content: '';
+    border-bottom: 0.5px solid darkslategrey;
+    width: 100%;
+    position: absolute;
+    right: 0;
+    top: 50%;
+}
 
 .receiptCompanyNameField,
 .receiptCustomerNameField,
@@ -579,6 +589,7 @@ table.payments td.label {
 		div.discount {
 			font-style: italic:
 		}
+
 		@import url('https://fonts.googleapis.com/css?family=Roboto&display=swap');
 
 	}
