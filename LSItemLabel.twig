@@ -74,10 +74,10 @@ Replace {{ Account ID }} with your LS Retail Account number
 
 {# Use the following if adjustments to the label position are needed. Positive and negative numbers work #}
 
-{% set small_top_margin = 'auto' %}
-{% set small_right_margin = '' %}
-{% set small_bottom_margin = '' %}
-{% set small_left_margin = '' %}
+{% set small_top_margin = '0px' %}
+{% set small_right_margin = '5px' %}
+{% set small_bottom_margin = '10px' %}
+{% set small_left_margin = '15px' %}
 
 {# For Vertical:   Negative numbers move up, positive move down
    For Horizontal: Negative numbers move right, positive move left #}
@@ -215,14 +215,13 @@ Replace {{ Account ID }} with your LS Retail Account number
     }
 
     .label.size125x100 .SKU {
-        font-weight: bold;
         text-align: center;
         margin-bottom: 0;
         font-size: {{ small_SKU_font_size }};
     }
 
     .label.size125x100 .price {
-        font-weight: bold;
+        font-weight: 500;
         width: 100%;
         margin: auto;
         font-size: {{ small_price_font_size }};
