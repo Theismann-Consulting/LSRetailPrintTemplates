@@ -8,7 +8,7 @@ Set any of the options in this section from 'false' to 'true' in order to enable
 {% set show_manufacturer_sku = false %}             {# Display Manufacturer SKU (if available) above Description #}
 {% set show_upc_code = false %}                     {# Display the UPC code at the top of the receipt (using UPC codes in barcode does not work) #}
 {% set show_date = false %}                         {# Display today's date above description (ddmmyy formatting) #}
-{% set price_with_no_cents = true %}               {# Remove cents from being displayed in price #}
+{% set price_with_no_cents = false %}               {# Remove cents from being displayed in price #}
 {% set date_format = 'mdy' %}                       {# Format the date is shown in if show_date is enabled.
                                                         m = 2 digit month, d = 2 digit day, y = 2 digit year, Y = 4 digit year #}
 {% set hide_price = false %}                        {# Remove the price from displaying on label #}
@@ -41,7 +41,7 @@ Set any of the options in this section from 'false' to 'true' in order to enable
 {# For Vertical:   Negative numbers move up, positive move down
    For Horizontal: Negative numbers move right, positive move left #}
 
-{% set normal_barcode_vertical = '-20px' %}
+{% set normal_barcode_vertical = '-40px' %}
 {% set normal_barcode_horizontal = '0px' %}
 
 
@@ -69,14 +69,14 @@ Set any of the options in this section from 'false' to 'true' in order to enable
 
 {% set small_description_font_size = '0pt' %}       {# Default is 9pt #}
 {% set small_price_font_size = '6pt' %}             {# Default is 7pt #}
-{% set small_SKU_font_size = '9pt' %}       {# Default is 9pt #}
+{% set small_SKU_font_size = '11pt' %}       {# Default is 9pt #}
 
 {# Use the following if adjustments to the label position are needed. Positive and negative numbers work #}
 
-{% set small_top_margin = '10px' %}
-{% set small_right_margin = '10px' %}
-{% set small_bottom_margin = '10px' %}
-{% set small_left_margin = '10px' %}
+{% set small_top_margin = 'auto' %}
+{% set small_right_margin = '' %}
+{% set small_bottom_margin = '' %}
+{% set small_left_margin = '' %}
 
 {# For Vertical:   Negative numbers move up, positive move down
    For Horizontal: Negative numbers move right, positive move left #}
@@ -127,8 +127,8 @@ Set any of the options in this section from 'false' to 'true' in order to enable
     {# Normal Label (2.5x4) CSS settings #}
 
     .label {
-      width: 4in;
-      height: 2.5in;
+      width: 3.9in;
+      height: 2.4in;
       margin: 0;
       position: relative;
       overflow: hidden;
