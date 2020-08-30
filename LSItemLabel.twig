@@ -19,6 +19,7 @@ Replace {{ Account ID }} with your LS Retail Account number
 {% set show_dimensions = false %}                   {# Show Dimensions from Custom Fields #}
 {% set show_logo = true %}                          {# Show Shop Logo #}
 {% set show_brand = true %}                         {# Show Item Brand #}
+{% set show_MSRP = true %}                          {# Show MSRP #}
 
 {# Enter Category IDs (found in Settings > Categories by clicking on the desired Category and looking at the id=number at in the URL for the Category)
     into the appropriate section, separated by commas and enclosed in single quotes #}
@@ -31,9 +32,9 @@ Replace {{ Account ID }} with your LS Retail Account number
 
 {# Normal Label (2.25x1.25) settings #}
 
-{% set normal_description_font_size = '16pt' %}      {# Default is 9pt #}
+{% set normal_description_font_size = '14pt' %}      {# Default is 9pt #}
 {% set normal_price_font_size = '12pt' %}           {# Default is 12pt #}
-{% set normal_SKU_font_size = '16pt' %}      {# Default is 9pt #}
+{% set normal_SKU_font_size = '14pt' %}      {# Default is 9pt #}
 
 {# Use the following if adjustments to the label position are needed. Positive and negative numbers work #}
 
@@ -41,13 +42,13 @@ Replace {{ Account ID }} with your LS Retail Account number
 {% set normal_right_margin = '10px' %}
 {% set normal_bottom_margin = '10px' %}
 {% set normal_left_margin = '10px' %}
-{% set normal_logo_width = '75px' %}
+{% set normal_logo_width = '95px' %}
 
 {# For Vertical:   Negative numbers move up, positive move down
    For Horizontal: Negative numbers move right, positive move left #}
 
 {% set normal_barcode_vertical = '-40px' %}
-{% set normal_barcode_horizontal = '100px' %}
+{% set normal_barcode_horizontal = '140px' %}
 
 
 {# Alt. Label (2.00x1.00) settings #}
@@ -150,17 +151,26 @@ Replace {{ Account ID }} with your LS Retail Account number
       height: 216pt;
     }
 
+    .label.size225x125 {
+        display: table;
+    }
+
     .label.size225x125 .custom_margin {
         margin: {{normal_top_margin}} {{normal_right_margin}} {{normal_bottom_margin}} {{normal_left_margin}};
     }
+    
+    .label.size225x125 article {
+        display: table-row-group;
+    }
 
     .label.size225x125 .description {
+        text-align: center;
         font-size: {{ normal_description_font_size }};
     }
 
     .label.size225x125 .SKU {
         margin: 10px 0px;
-        float: left;
+        text-align: center;
         font-size: {{ normal_description_font_size }};
     }
 
@@ -176,9 +186,13 @@ Replace {{ Account ID }} with your LS Retail Account number
 
     .label.size225x125 #title {
         margin: 5px 0px;
-        font-size: 16pt;
         padding-right: 10px;
-        text-align: right;
+        text-align: center;
+        font-size:  {{ normal_description_font_size }};
+    }
+
+    .label.size225x125 .top-row {
+        display: table-row;
     }
 
     .label.size225x125 .barcode {
@@ -194,6 +208,7 @@ Replace {{ Account ID }} with your LS Retail Account number
     .label.size225x125 #logo {
         width: {{ normal_logo_width }};
         float: left;
+        display: table-cell;
     }
 
     {# Alt. Label (2.00x1.00) CSS settings #}
@@ -322,77 +337,76 @@ Replace {{ Account ID }} with your LS Retail Account number
                     <div class="label size{{Label.MetaData.size}} custom_margin">
             {% endif %}
             <article>
-                {% if show_logo == true %}
-                    <script>
-                        (async() => {
-                            const request = await fetch('https://us.lightspeedapp.com/API/Account/195684/Shop.json?load_relations=["ReceiptSetup"]', {credentials:"same-origin"});
-                            const response = await request.json();
-                            console.log(response.Shop.ReceiptSetup.hasLogo);
-                            if(response.Shop.ReceiptSetup.hasLogo == "true"){
-                                document.getElementById("logo").src = response.Shop.ReceiptSetup.logo;
-                            }
-                        })()
-                    </script>
-                    <div>
-                        <img id="logo">
+                <div class="top-row">
+                    {% if show_logo == true %}
+                        <script>
+                            (async() => {
+                                const request = await fetch('https://us.lightspeedapp.com/API/Account/195684/Shop.json?load_relations=["ReceiptSetup"]', {credentials:"same-origin"});
+                                const response = await request.json();
+                                if(response.Shop.ReceiptSetup.hasLogo == "true"){
+                                    document.getElementById("logo").src = response.Shop.ReceiptSetup.logo;
+                                }
+                            })()
+                        </script>
+                            <img id="logo">
+                    {% endif %}
+                    <div class="description">
                         <div id="title" class="description">
                             {% if hide_description == false %}
                             {{ Label.Item.description|strreplace('_',' ') }}
                             {% endif %}
                         </div>
+                    {% if show_dimensions == true %}
+                            <script>
+                                (async() => {
+                                    const request = await fetch('https://us.lightspeedapp.com/API/Account/195684/Item/{{ Label.Item.itemID }}.json?load_relations=["CustomFieldValues"]', {credentials:"same-origin"});
+                                    const response = await request.json();
+                                if(response.Item.CustomFieldValues.CustomFieldValue.name === "Dimensions") { document.getElementById("dimensions").textContent = response.Item.CustomFieldValues.CustomFieldValue.value};
+                                })()
+                            </script>
+                            <br />
+                            <div id ="dimensions" class="description">
+                            </div>
+                    {% endif %}
+                    {% if show_brand == true %}
+                        <script>;
+                        (async() => {
+                            const request = await fetch('https://us.lightspeedapp.com/API/Account/195684/Manufacturer/{{ Label.Item.manufacturerID }}.json?', {credentials:"same-origin"});
+                            const response = await request.json();
+                        document.getElementById("brand").textContent = response.Manufacturer.name;
+                        })()
+                        </script>
+                        <div id ="brand" class="description">
+                        </div>
+                    {% endif %}
+                    {% if vendor_number == true %}
+                    <div>
+                        {% for ItemVendorNum in Label.Item.ItemVendorNums.ItemVendorNum %}
+                            {% if Label.Item.defaultVendorID+0 == ItemVendorNum.vendorID+0 %}
+                                <span style="font-style: italic;">{{ ItemVendorNum.value }}</span>
+                            {% endif %}
+                        {% endfor %}
+                        </div>
+                    {% endif %}
+                    <div class="SKU">
+                        {% if show_upc_code == true %}
+                            {% if Label.Item.upc|strlen > 0 %}
+                                <i>{{ Label.Item.upc }}</i>
+                            {% endif %}
+                        {% endif %}
+                        {% if show_custom_sku == true %}
+                            {% if Label.Item.customSku|strlen > 0 %}
+                                <i>{{ Label.Item.customSku }}</i><br/>
+                            {% endif %}
+                        {% endif %}
+                        {% if show_manufacturer_sku == true %}
+                            {% if Label.Item.manufacturerSku|strlen > 0 %}
+                                <i>{{ Label.Item.manufacturerSku }}</i>
+                            {% endif %}
+                        {% endif %}
                     </div>
-                {% endif %}
-              <p class="description">
-                  {% if show_dimensions == true %}
-                    <script>
-                    (async() => {
-                        const request = await fetch('https://us.lightspeedapp.com/API/Account/195684/Item/{{ Label.Item.itemID }}.json?load_relations=["CustomFieldValues"]', {credentials:"same-origin"});
-                        const response = await request.json();
-                    if(response.Item.CustomFieldValues.CustomFieldValue.name === "Dimensions") { document.getElementById("dimensions").textContent = response.Item.CustomFieldValues.CustomFieldValue.value};
-                    })()
-                    </script>
-                  {% endif %}
-                  <br />
-                  <div id ="dimensions" class="description">
                   </div>
-                   {% if show_brand == true %}
-                    <script>;
-                    (async() => {
-                        const request = await fetch('https://us.lightspeedapp.com/API/Account/195684/Manufacturer/{{ Label.Item.manufacturerID }}.json?', {credentials:"same-origin"});
-                        const response = await request.json();
-                    document.getElementById("brand").textContent = response.Manufacturer.name;
-                    })()
-                    </script>
-                  {% endif %}
-                  <br />
-                  <div id ="brand" class="SKU">
-                  </div>
-                  {% if vendor_number == true %}
-                      {% for ItemVendorNum in Label.Item.ItemVendorNums.ItemVendorNum %}
-                          {% if Label.Item.defaultVendorID+0 == ItemVendorNum.vendorID+0 %}
-                              <span style="font-style: italic;">{{ ItemVendorNum.value }}</span>
-                          {% endif %}
-                      {% endfor %}
-                  {% endif %}
-              </p>
-              <p class="SKU">
-                  {% if show_upc_code == true %}
-                      {% if Label.Item.upc|strlen > 0 %}
-                          <i>{{ Label.Item.upc }}</i>
-                      {% endif %}
-                  {% endif %}
-                  {% if show_custom_sku == true %}
-                      {% if Label.Item.customSku|strlen > 0 %}
-                          <i>{{ Label.Item.customSku }}</i><br/>
-                      {% endif %}
-                  {% endif %}
-                  {% if show_manufacturer_sku == true %}
-                      {% if Label.Item.manufacturerSku|strlen > 0 %}
-                          <i>{{ Label.Item.manufacturerSku }}</i>
-                      {% endif %}
-                  {% endif %}
-
-              </p>
+                </div>
                   <div class="text-wrapper">
                     {% if hide_price == false %}
                         {% if Label.MetaData.price > 0 %}
@@ -404,8 +418,8 @@ Replace {{ Account ID }} with your LS Retail Account number
                                 {% else %}
                                 <p class="saleprice">{{ Label.MetaData.price|money|htmlparsemoney|raw }}</p>
                                 {% endif %}
-                                {% if Label.MetaData.msrp %}
-                                    <p class="msrp">MSRP {{ Label.MetaData.msrp|money }}</p>
+                                {% if show_MSRP == true %}
+                                    <p class="msrp">MSRP {{ Label.Item.Prices.ItemPrice[1].amount|money }}</p>
                                 {% endif %}
                             </div>
                         {% endif %}
