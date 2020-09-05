@@ -4,9 +4,10 @@ Set any of the options in this section from 'false' to 'true' in order to enable
 #}
 {% set hide_rep_info = false %} {# Removes acct rep from PO template #}
 {% set hide_account_number = false %} {# Removes acct number from PO template #}
-{% set hide_shipping_table = false %} {# Removes shipping table from PO template #}
+{% set hide_shipping_table = true %} {# Removes shipping table from PO template #}
 {% set hide_shipping_notes = false %} {# Removes shipping notes from PO template #}
 {% set hide_general_notes = false %} {# Removes general notes from PO template #}
+{% set show_logo = true %} {# Shows Logo on PO #}
 {#
 ***End Custom Options***
 #}
@@ -152,11 +153,30 @@ img.barcode {
 margin: 0px auto;
 display: block;
 }
+img.logo {
+  position: absolute;
+  height: 100px;
+}
 html { height: 100% }
 </style>
 {% endblock style %}
 {% block content %}
 {% for Order in Orders %}
+{% if show_logo == true %}
+  <script>
+      (async() => {
+          const request = await fetch('https://us.lightspeedapp.com/API/Account/{{ AccountID }}/Shop.json?load_relations=["ReceiptSetup"]', {credentials:"same-origin"});
+          const response = await request.json();
+          if(response.Shop.ReceiptSetup.hasLogo == "true"){
+              const logos = document.getElementsByClassName("logo");
+              Array.from(logos).forEach((element) => {
+                  element.src = response.Shop.ReceiptSetup.logo;
+              })
+          }
+      })()
+  </script>
+      <img class="logo">
+{% endif %}
 <header class="col-spacerL-md6 col-md6 u-margin-Bxl">
 <h2 class="u-margin-Vn">
 Purchase Order<small> #{{ Order.orderID }}</small>
@@ -166,6 +186,9 @@ Ordered: {{Order.orderedDate|correcttimezone|date ("m/d/y")}}<br />
 Expected: {{Order.arrivalDate|correcttimezone|date ("m/d/y")}}<br /> 
 </div>
 </header>
+<div class="row">
+<br/>
+</div>
 <div class="row">
 <div class="col-md-6">
 <h6 class="u-margin-Vn">Vendor</h6>
@@ -259,13 +282,25 @@ Expected: {{Order.arrivalDate|correcttimezone|date ("m/d/y")}}<br />
 {% endif %}
 </table>
 {% endif %}
+<table>
+{% if hide_shipping_notes == false %}
+{% if Order.shipInstructions|strlen > 0 %}
+<tr class="minor leading-row-gap">
+<th>Shipping Instructions:</th>
+<td>{{Order.shipInstructions}}</td>
+<td></td>
+</tr>
+{% endif %}
+{% endif %}
+</table>
 <h3>Details</h3>
 <table class="document">
 <thead>
 <tr>
-<th>Vendor ID</th>
+<th>Custom SKU</th>
 <th>UPC Code</th>
 <th>Description</th>
+<th>Notes</th>
 <th>Qty</th>
 <th>Unit Cost</th>
 {% if Order.discount > 0 %}
@@ -278,14 +313,24 @@ Expected: {{Order.arrivalDate|correcttimezone|date ("m/d/y")}}<br />
 {% for OrderLine in Order.OrderLines.OrderLine %}
 <tr>
 <td>
-{% if OrderLine.Item.ItemVendorNums.ItemVendorNum.value|strlen > 0 %}
-{{OrderLine.Item.ItemVendorNums.ItemVendorNum.value}}
+{% if OrderLine.Item.customSku|strlen > 0 %}
+{{OrderLine.Item.customSku}}
 {% else %}
 <em>None</em>
 {% endif %} 
 </td>
 <td>{{OrderLine.Item.upc}}</td>
 <td>{{OrderLine.Item.description}}</td>
+<td>
+{% if OrderLine.SpecialOrders %}
+{% for SpecialOrder in OrderLine.SpecialOrders %}
+<div class="lineNotes">Special Order</div>
+{% endfor %}
+{% endif %}
+<script>
+
+</script>
+</td>
 <td>{{OrderLine.quantity}}</td>
 <td class="money">{{OrderLine.originalPrice|money}}</td>
 <td class="money">{{OrderLine.total|money}}</td>
@@ -299,12 +344,16 @@ Expected: {{Order.arrivalDate|correcttimezone|date ("m/d/y")}}<br />
 {% endif %}
 <td></td>
 <td></td>
+<td></td>
+<td></td>
 <td class="money">{{Order.MetaData.subtotal|money}}</td>
 </tr>
 {% if Order.totalDiscount > 0 %}
 <tr class="minor">
 <th>Discount</th>
 <th></th>
+<td></td>
+<td></td>
 <td></td>
 <td></td>
 <td class="money">{{Order.totalDiscount|getinverse|money}}</td>
@@ -316,6 +365,14 @@ Expected: {{Order.arrivalDate|correcttimezone|date ("m/d/y")}}<br />
 <th></th>
 {% endif %}
 <td></td>
+<td></td>
+<td>
+{% if Order.totalQuantity|strlen > 0 %}
+{{Order.totalQuantity}}
+{% else %}
+<i>None</i>
+{% endif %}
+</td>
 <td></td>
 <td class="money">{{Order.MetaData.total|money}}</td>
 </tr>
@@ -329,4 +386,7 @@ Expected: {{Order.arrivalDate|correcttimezone|date ("m/d/y")}}<br />
 {% endif %}
 {% endif %}
 {% endfor %}
+<script>
+alert('Purchase Order is being Generated');
+</script>
 {% endblock content %}
