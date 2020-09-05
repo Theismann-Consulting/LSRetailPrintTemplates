@@ -47,14 +47,14 @@ Replace {{ Account ID }} with your LS Retail Account number
 {# For Vertical:   Negative numbers move up, positive move down
    For Horizontal: Negative numbers move right, positive move left #}
 
-{% set normal_barcode_vertical = '-40px' %}
+{% set normal_barcode_vertical = '0px' %}
 {% set normal_barcode_horizontal = '140px' %}
 
 
 {# Alt. Label (2.00x1.00) settings #}
 
-{% set alt_description_font_size = '9pt' %}         {# Default is 9pt #}
-{% set alt_price_font_size = '12pt' %}              {# Default is 12pt #}
+{% set alt_description_font_size = '10pt' %}         {# Default is 9pt #}
+{% set alt_price_font_size = '8pt' %}              {# Default is 12pt #}
 {% set alt_SKU_font_size = '9pt' %}         {# Default is 9pt #}
 
 {# Use the following if adjustments to the label position are needed. Positive and negative numbers work #}
@@ -168,6 +168,11 @@ Replace {{ Account ID }} with your LS Retail Account number
         font-size: {{ normal_description_font_size }};
     }
 
+    .label.size225x125 .brands {
+        text-align: center;
+        font-size: {{ normal_description_font_size }};
+    }
+
     .label.size225x125 .SKU {
         margin: 10px 0px;
         text-align: center;
@@ -175,7 +180,9 @@ Replace {{ Account ID }} with your LS Retail Account number
     }
 
     .label.size225x125 .price {
-        float: right;
+        position: absolute;
+        bottom: 0px;
+        left: 2.8in;
         font-size: {{ normal_price_font_size }};
     }
 
@@ -205,10 +212,14 @@ Replace {{ Account ID }} with your LS Retail Account number
         width: 1.0in;
     }
 
-    .label.size225x125 #logo {
+    .label.size225x125 .logo {
         width: {{ normal_logo_width }};
         float: left;
         display: table-cell;
+    }
+
+    .label.size225x125 h1 {
+        display: none;
     }
 
     {# Alt. Label (2.00x1.00) CSS settings #}
@@ -222,7 +233,7 @@ Replace {{ Account ID }} with your LS Retail Account number
     }
 
     .label.size200x100 .SKU {
-        font-size: {{ alt_SKU_font_size }};
+        display: none;
     }
 
     .label.size200x100 .price {
@@ -234,6 +245,21 @@ Replace {{ Account ID }} with your LS Retail Account number
         bottom: {{ alt_barcode_vertical * -1 }}px;
         left: {{ alt_barcode_horizontal * -1 }}px;
     }
+
+    .label.size200x100 .logo {
+        display: none;
+    }
+
+    .label.size200x100 .brands {
+        display: none;
+    }
+
+    .label.size200x100 .top-row {
+        width: 110px;
+        float: right;
+        text-align: right;
+    }
+
     {# Small Label (1.25x1.00) CSS settings #}
 
     .label.size125x100 {
@@ -267,6 +293,11 @@ Replace {{ Account ID }} with your LS Retail Account number
         bottom: {{ small_barcode_vertical * -1 }}px;
         left: {{ small_barcode_horizontal * -1 }}px;
     }
+
+    .label.size125x100 .logo {
+        display: none;
+    }
+
 
     {# Jewelry Label (2.20x.50) CSS settings #}
 
@@ -315,6 +346,7 @@ Replace {{ Account ID }} with your LS Retail Account number
                 {% if category == Label.Item.categoryID %}
                     <div class="label size200x100">
                         <div class="label size200x100 custom_margin">
+                            <h1>{{ Label.MetaData.title }}</h1>
                         {% set size_specified = true %}
                 {% endif %}
             {% endfor %}
@@ -337,6 +369,7 @@ Replace {{ Account ID }} with your LS Retail Account number
                     <div class="label size{{Label.MetaData.size}} custom_margin">
             {% endif %}
             <article>
+                <h1>{{ Label.MetaData.title }}</h1>
                 <div class="top-row">
                     {% if show_logo == true %}
                         <script>
@@ -344,11 +377,14 @@ Replace {{ Account ID }} with your LS Retail Account number
                                 const request = await fetch('https://us.lightspeedapp.com/API/Account/195684/Shop.json?load_relations=["ReceiptSetup"]', {credentials:"same-origin"});
                                 const response = await request.json();
                                 if(response.Shop.ReceiptSetup.hasLogo == "true"){
-                                    document.getElementById("logo").src = response.Shop.ReceiptSetup.logo;
+                                    const logos = document.getElementsByClassName("logo");
+                                    Array.from(logos).forEach((element) => {
+                                        element.src = response.Shop.ReceiptSetup.logo;
+                                    })
                                 }
                             })()
                         </script>
-                            <img id="logo">
+                            <img class="logo">
                     {% endif %}
                     <div class="description">
                         <div id="title" class="description">
@@ -369,14 +405,21 @@ Replace {{ Account ID }} with your LS Retail Account number
                             </div>
                     {% endif %}
                     {% if show_brand == true %}
-                        <script>;
-                        (async() => {
-                            const request = await fetch('https://us.lightspeedapp.com/API/Account/195684/Manufacturer/{{ Label.Item.manufacturerID }}.json?', {credentials:"same-origin"});
-                            const response = await request.json();
-                        document.getElementById("brand").textContent = response.Manufacturer.name;
-                        })()
+                        <script>
+                            if({{ Label.Item.manufacturerID }}){
+                                (async() => {
+                                    const request = await fetch('https://us.lightspeedapp.com/API/Account/195684/Manufacturer/{{ Label.Item.manufacturerID }}.json?', {credentials:"same-origin"});
+                                    const response = await request.json();
+                                    if(response.Manufacturer.name) {
+                                        const brands = document.getElementsByClassName("{{ Label.Item.itemID }}-brand");
+                                        Array.from(brands).forEach((element) => {
+                                            element.textContent = response.Manufacturer.name;
+                                        })
+                                    }
+                                })()
+                            }
                         </script>
-                        <div id ="brand" class="description">
+                        <div class="brands {{ Label.Item.itemID }}-brand">
                         </div>
                     {% endif %}
                     {% if vendor_number == true %}
@@ -419,7 +462,7 @@ Replace {{ Account ID }} with your LS Retail Account number
                                 <p class="saleprice">{{ Label.MetaData.price|money|htmlparsemoney|raw }}</p>
                                 {% endif %}
                                 {% if show_MSRP == true %}
-                                    <p class="msrp">MSRP {{ Label.Item.Prices.ItemPrice[1].amount|money }}</p>
+                                    <p class="msrp">MSRP {{ Label.MetaData.msrp|money }}</p>
                                 {% endif %}
                             </div>
                         {% endif %}
