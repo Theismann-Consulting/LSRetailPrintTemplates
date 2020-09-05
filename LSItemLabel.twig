@@ -374,7 +374,7 @@ Replace {{ Account ID }} with your LS Retail Account number
                     {% if show_logo == true %}
                         <script>
                             (async() => {
-                                const request = await fetch('https://us.lightspeedapp.com/API/Account/195684/Shop.json?load_relations=["ReceiptSetup"]', {credentials:"same-origin"});
+                                const request = await fetch('https://us.lightspeedapp.com/API/Account/{{ AccountID }}/Shop.json?load_relations=["ReceiptSetup"]', {credentials:"same-origin"});
                                 const response = await request.json();
                                 if(response.Shop.ReceiptSetup.hasLogo == "true"){
                                     const logos = document.getElementsByClassName("logo");
@@ -395,7 +395,7 @@ Replace {{ Account ID }} with your LS Retail Account number
                     {% if show_dimensions == true %}
                             <script>
                                 (async() => {
-                                    const request = await fetch('https://us.lightspeedapp.com/API/Account/195684/Item/{{ Label.Item.itemID }}.json?load_relations=["CustomFieldValues"]', {credentials:"same-origin"});
+                                    const request = await fetch('https://us.lightspeedapp.com/API/Account/{{ AccountID }}/Item/{{ Label.Item.itemID }}.json?load_relations=["CustomFieldValues"]', {credentials:"same-origin"});
                                     const response = await request.json();
                                 if(response.Item.CustomFieldValues.CustomFieldValue.name === "Dimensions") { document.getElementById("dimensions").textContent = response.Item.CustomFieldValues.CustomFieldValue.value};
                                 })()
@@ -408,7 +408,7 @@ Replace {{ Account ID }} with your LS Retail Account number
                         <script>
                             if({{ Label.Item.manufacturerID }}){
                                 (async() => {
-                                    const request = await fetch('https://us.lightspeedapp.com/API/Account/195684/Manufacturer/{{ Label.Item.manufacturerID }}.json?', {credentials:"same-origin"});
+                                    const request = await fetch('https://us.lightspeedapp.com/API/Account/{{ AccountID }}/Manufacturer/{{ Label.Item.manufacturerID }}.json?', {credentials:"same-origin"});
                                     const response = await request.json();
                                     if(response.Manufacturer.name) {
                                         const brands = document.getElementsByClassName("{{ Label.Item.itemID }}-brand");
